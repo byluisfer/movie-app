@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getMovieDetail, getProviders } from "@/app/lib/tmdb";
-import { TMDBMovieDetail } from "@/app/lib/types";
+import WatchButton from "@/app/components/WatchButton";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -67,6 +67,7 @@ export default async function MovieDetailPage({ params }: Props) {
           </div>
 
           <p className="max-w-xl leading-relaxed">{movie.overview}</p>
+          <WatchButton tmdbId={movie.id} mediaType="movie" />
 
           {flatrate.length > 0 && (
             <div className="flex flex-col gap-2">

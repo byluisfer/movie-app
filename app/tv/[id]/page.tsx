@@ -1,33 +1,24 @@
 import Image from "next/image";
-import { getMovieDetail, getProviders } from "@/app/lib/tmdb";
-import { TMDBMovieDetail } from "@/app/lib/types";
+import { getTVDetail, getProviders } from "@/app/lib/tmdb";
+import { TMDBTVDetail } from "@/app/lib/types";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default async function MovieDetailPage({ params }: Props) {
+export default async function TVDetailPage({ params }: Props) {
   const { id } = await params;
-  const movie = await getMovieDetail(id);
-
-  if (!movie) {
-    return (
-      <div className="py-24 text-center text-zinc-400">
-        This movie information is not available.
-      </div>
-    );
-  }
-
-  const providers = await getProviders("movie", id);
+  const tv: TMDBTVDetail = await getTVDetail(id);
+  const providers = await getProviders("tv", id);
   const flatrate = providers?.results?.ES?.flatrate ?? [];
 
   return (
     <div className="flex flex-col gap-8">
-      {Boolean(movie.backdrop_path) && (
+      {tv.backdrop_path && (
         <div className="relative h-[300px] w-full">
           <Image
-            src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-            alt={movie.title}
+            src={`https://image.tmdb.org/t/p/original${tv.backdrop_path}`}
+            alt={tv.name}
             fill
             className="object-cover"
             priority
@@ -37,10 +28,10 @@ export default async function MovieDetailPage({ params }: Props) {
       )}
 
       <div className="mx-auto flex max-w-5xl gap-8 px-4">
-        {movie.poster_path && (
+        {tv.poster_path && (
           <Image
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-            alt={movie.title}
+            src={`https://image.tmdb.org/t/p/w500${tv.poster_path}`}
+            alt={tv.name}
             width={300}
             height={450}
             className="rounded-lg"
@@ -48,15 +39,15 @@ export default async function MovieDetailPage({ params }: Props) {
         )}
 
         <div className="flex flex-col gap-4">
-          <h1 className="text-3xl font-semibold">{movie.title}</h1>
+          <h1 className="text-3xl font-semibold">{tv.name}</h1>
 
           <p className="text-zinc-400">
-            {movie.release_date ? movie.release_date.slice(0, 4) : "—"}
-            {movie.vote_average.toFixed(1)}
+            {tv.first_air_date.slice(0, 4)} · ⭐ {tv.vote_average.toFixed(1)} ·{" "}
+            {tv.number_of_seasons} seasons
           </p>
 
           <div className="flex gap-2">
-            {movie.genres.map((g) => (
+            {tv.genres.map((g) => (
               <span
                 key={g.id}
                 className="rounded-full bg-zinc-800 px-3 py-1 text-sm"
@@ -66,7 +57,7 @@ export default async function MovieDetailPage({ params }: Props) {
             ))}
           </div>
 
-          <p className="max-w-xl leading-relaxed">{movie.overview}</p>
+          <p className="max-w-xl leading-relaxed">{tv.overview}</p>
 
           {flatrate.length > 0 && (
             <div className="flex flex-col gap-2">

@@ -8,7 +8,12 @@ interface Props {
 
 export default function MediaCard({ media }: Props) {
   const title = media.title || media.name;
-  const href = `/${media.media_type}/${media.id}`;
+
+  if (media.media_type !== "movie" && media.media_type !== "tv") {
+    return null;
+  }
+  const href =
+    media.media_type === "movie" ? `/movie/${media.id}` : `/tv/${media.id}`;
 
   return (
     <Link

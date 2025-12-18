@@ -24,7 +24,12 @@ export async function getTrending(): Promise<TMDBMedia[]> {
   }
 
   const data: TMDBResponse<TMDBMedia> = await res.json();
-  return data.results;
+
+  return data.results.filter(
+    (item) =>
+      (item.media_type === "movie" || item.media_type === "tv") &&
+      typeof item.id === "number"
+  );
 }
 
 export async function getPopularMovies(): Promise<TMDBMedia[]> {
@@ -76,4 +81,51 @@ export async function getUpcomingMovies(): Promise<TMDBMedia[]> {
     ...movie,
     media_type: "movie",
   }));
+}
+
+export async function getMovieDetail(id: string) {
+  const res = await fetch(`${BASE_URL}/movie/${id}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    next: { revalidate: 3600 },
+  });
+
+  if (!res.ok) {
+    console.warn("Movie detail not found:", id);
+    return null;
+  }
+
+  return res.json();
+}
+
+export async function getTVDetail(id: string) {
+  const res = await fetch(`${BASE_URL}/tv/${id}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    next: { revalidate: 3600 },
+  });
+
+  if (!res.ok) {
+    console.warn("TV detail not found:", id);
+    return null;
+  }
+
+  return res.json();
+}
+
+export async function getProviders(type: "movie" | "tv", id: string) {
+  const res = await fetch(`${BASE_URL}/${type}/${id}/watch/providers`, {
+    headers: {
+      Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    next: { revalidate: 3600 },
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch providers");
+  return res.json();
 }

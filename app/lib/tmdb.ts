@@ -218,3 +218,33 @@ export async function getTVGenres() {
   const data = await res.json();
   return data.genres;
 }
+
+export async function searchMulti(query: string): Promise<TMDBMedia[]> {
+  const res = await fetch(
+    `${BASE_URL}/search/multi?query=${encodeURIComponent(
+      query
+    )}&include_adult=false`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
+      },
+      next: { revalidate: 0 },
+    }
+  );
+
+  if (!res.ok) throw new Error("Search failed");
+
+  const data: TMDBResponse<TMDBMedia & { vote_count?: number }> =
+    await res.json();
+
+  return data.results
+    .filter(
+      (item) =>
+        (item.media_type === "movie" || item.media_type === "tv") &&
+        item.poster_path &&
+        (item as any).vote_count !== undefined &&
+        (item as any).vote_count > 50
+    )
+    .sort((a: any, b: any) => (b.vote_count ?? 0) - (a.vote_count ?? 0))
+    .slice(0, 20);
+}

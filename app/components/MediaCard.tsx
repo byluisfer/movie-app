@@ -12,20 +12,22 @@ export default function MediaCard({ media }: Props) {
   if (media.media_type !== "movie" && media.media_type !== "tv") {
     return null;
   }
+
   const href =
-    media.media_type === "movie" ? `/movie/${media.id}` : `/tv/${media.id}`;
+    media.media_type === "movie" ? `/movies/${media.id}` : `/tv/${media.id}`;
 
   return (
     <Link
       href={href}
       className="group flex flex-col gap-2 rounded-lg transition hover:scale-[1.02]"
     >
-      <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg bg-zinc-200">
+      <div className="relative aspect-2/3 w-full overflow-hidden rounded-lg bg-zinc-200">
         {media.poster_path && (
           <Image
             src={`https://image.tmdb.org/t/p/w500${media.poster_path}`}
             alt={title ?? ""}
             fill
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 20vw, 20vw"
             className="object-cover"
           />
         )}

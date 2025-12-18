@@ -68,3 +68,9 @@ export interface TMDBTVDetail {
   vote_average: number;
   number_of_seasons: number;
 }
+
+export interface TMDBProvider {
+  provider_id: number;
+  provider_name: string;
+  logo_path: string | null;
+}

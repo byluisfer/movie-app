@@ -27,7 +27,7 @@ export default function Header() {
         {/* LEFT */}
         <div className="flex items-center gap-6">
           <Link href="/" className="text-lg font-semibold text-white">
-            MovieApp
+            FRAME
           </Link>
 
           {user && <SearchInput />}
